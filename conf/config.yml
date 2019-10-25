@@ -1,7 +1,0 @@
-database:
-  username:
-  password:
-  url:
-
-redis:
-  ips:
