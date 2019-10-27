@@ -18,6 +18,5 @@ func InitDatabase() (err error) {
 		return err
 	}
 	Db.SingularTable(true)
-	//defer Db.Close()
 	return nil
 }

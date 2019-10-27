@@ -7,7 +7,7 @@ import (
 
 const (
 	LevelSeparator = "/"
-	RootLevel = "0"
+	RootLevel      = "0"
 )
 
 func CalLevel(parentLevel string, parentId int64) string {
