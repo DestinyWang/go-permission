@@ -1,0 +1,10 @@
+Database:
+  Username: "root"
+  Password: "123456"
+  Host: "localhost"
+  Port: 3306
+  DbName: "authority"
+  Url: "root:123456@/authority?charset=utf8"
+
+Redis:
+  Ips:

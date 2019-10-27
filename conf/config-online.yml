@@ -1,5 +1,0 @@
-Database:
-  Url: "root:123456@/auth?charset=utf8"
-
-Redis:
-  Ips:

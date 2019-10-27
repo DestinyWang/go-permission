@@ -16,7 +16,7 @@ type Acl struct {
 	Seq         int    `json:"seq",gorm:"seq"`                   // 当前模块下的排序
 	Remark      string `json:"remark",gorm:"remark"`             // 备注
 	Operator    string `json:"operator",gorm:"operator"`         // 操作者
-	OperateTime int64  `json:"operateTime",xml:"operate_time"`   // 操作时间
+	OperateTime int64  `json:"operateTime",grom:"operate_time"`  // 操作时间
 	OperateIp   string `json:"operateIp",gorm:"operate_ip"`      // 操作者 ip
 }
 
@@ -29,4 +29,12 @@ func AddAcl(acl *Acl) (err error) {
 		logrus.WithError(err).Errorf("acl [%+v] insert fail", acl)
 	}
 	return
+}
+
+func FindById(id int64) (acl *Acl, err error) {
+	acl = new(Acl)
+	if err = util.Db.First(acl, 1).Error; err != nil {
+		logrus.WithError(err).Error("find by id fail")
+	}
+	return acl, err
 }
