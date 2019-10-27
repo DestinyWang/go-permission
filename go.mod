@@ -14,6 +14,8 @@ require (
 	github.com/creack/pty v1.1.9 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/gin-gonic/gin v1.4.0
+	github.com/go-playground/locales v0.13.0 // indirect
+	github.com/go-playground/universal-translator v0.16.0 // indirect
 	github.com/gogo/protobuf v1.3.1 // indirect
 	github.com/golang/groupcache v0.0.0-20191002201903-404acd9df4cc // indirect
 	github.com/google/go-cmp v0.3.1 // indirect
@@ -27,6 +29,7 @@ require (
 	github.com/julienschmidt/httprouter v1.3.0 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/kr/pty v1.1.8 // indirect
+	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/mattn/go-isatty v0.0.10 // indirect
 	github.com/mwitkow/go-conntrack v0.0.0-20190716064945-2f068394615f // indirect
@@ -59,4 +62,5 @@ require (
 	google.golang.org/appengine v1.6.5 // indirect
 	google.golang.org/grpc v1.24.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
+	gopkg.in/go-playground/validator.v9 v9.30.0
 )

@@ -19,7 +19,7 @@ type Cfg struct {
 	}
 }
 
-func InitConfig() (err error) {
+func InitConfig(configPath string) (err error) {
 	viper.SetDefault("env", "test") // 设置默认环境
 	if err = viper.BindEnv("env", "env"); err != nil { // 绑定系统环境
 		logrus.WithError(err).Error("bind env fail")
@@ -29,7 +29,7 @@ func InitConfig() (err error) {
 	cfgFileName := fmt.Sprintf("conf-%s", env)
 	logrus.Infof("config file=[%s]", cfgFileName)
 	viper.SetConfigName(cfgFileName)
-	viper.AddConfigPath("../conf")
+	viper.AddConfigPath(configPath)
 	viper.SetConfigType("yml")
 	if err = viper.ReadInConfig(); err != nil {
 		logrus.WithError(err).Error("read config fail")

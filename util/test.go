@@ -1,6 +1,6 @@
 package util
 
 func InitTestConfig() {
-	_ = InitConfig()
+	_ = InitConfig("../conf")
 	_ = InitDatabase()
 }
