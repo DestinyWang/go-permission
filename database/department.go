@@ -40,3 +40,10 @@ func AddDepartmentDB(department *Department) (err error) {
 	}
 	return err
 }
+
+func GetAllDept() (depts []*Department, err error) {
+	if err = util.Db.Find(&depts).Error; err != nil {
+		logrus.WithError(err).Error("get all departments fail")
+	}
+	return depts, err
+}

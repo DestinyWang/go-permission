@@ -6,6 +6,7 @@ import (
 	"github.com/DestinyWang/go-permission/department"
 	"github.com/DestinyWang/go-permission/util"
 	"github.com/gin-gonic/gin"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/sirupsen/logrus"
 	"net/http"
 )
@@ -13,7 +14,8 @@ import (
 func InitRouter() (router *gin.Engine) {
 	router = gin.Default()
 	router.GET("/hello", hello)
-	router.POST("/dept/add", addDept)
+	router.POST("/dept/add.json", addDept)
+	router.GET("/dept/tree.json", deptTree)
 	return router
 }
 
@@ -26,11 +28,12 @@ func hello(c *gin.Context) {
 
 func addDept(c *gin.Context) {
 	var (
-		deptVO *contoller.DeptVO
-		err    error
+		deptVO  *contoller.DeptVO
+		reqBody []byte
+		err     error
 	)
-	util.LogReq(c)
-	if err = c.ShouldBindJSON(&deptVO); err != nil {
+	reqBody, err = util.LogReq(c)
+	if err = jsoniter.Unmarshal(reqBody, &deptVO); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"err": err.Error(),
 		})
@@ -53,4 +56,21 @@ func addDept(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, util.Success("add department success"))
 	}
+}
+
+func deptTree(c *gin.Context) {
+	var (
+		//reqBody []byte
+		err           error
+		deptLevelDTOs []*contoller.DeptLevelDTO
+	)
+	_, _ = util.LogReq(c)
+	if deptLevelDTOs, err = department.Tree(); err != nil {
+		logrus.WithError(err).Error("get department tree fail")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"err": err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, deptLevelDTOs)
 }
