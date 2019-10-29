@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/DestinyWang/go-permission/contoller"
+	"github.com/DestinyWang/go-permission/model"
 	"github.com/DestinyWang/go-permission/database"
-	"github.com/DestinyWang/go-permission/department"
+	"github.com/DestinyWang/go-permission/service"
 	"github.com/DestinyWang/go-permission/util"
 	"github.com/gin-gonic/gin"
 	jsoniter "github.com/json-iterator/go"
@@ -14,8 +14,9 @@ import (
 func InitRouter() (router *gin.Engine) {
 	router = gin.Default()
 	router.GET("/hello", hello)
-	router.POST("/dept/add.json", addDept)
 	router.GET("/dept/tree.json", deptTree)
+	router.POST("/dept/add.json", addDept)
+	router.POST("/dept/update.json", deptTree)
 	return router
 }
 
@@ -28,7 +29,7 @@ func hello(c *gin.Context) {
 
 func addDept(c *gin.Context) {
 	var (
-		deptVO  *contoller.DeptVO
+		deptVO  *model.DeptVO
 		reqBody []byte
 		err     error
 	)
@@ -50,11 +51,11 @@ func addDept(c *gin.Context) {
 		OperateTime: operateTime,
 		OperateIp:   operateIp,
 	}
-	if err = department.AddDepartment(dept); err != nil {
-		logrus.WithError(err).Errorf("add department fail: deptVO=[%+v]", deptVO)
+	if err = service.AddDepartment(dept); err != nil {
+		logrus.WithError(err).Errorf("add service fail: deptVO=[%+v]", deptVO)
 		c.JSON(http.StatusInternalServerError, util.Fail(err.Error()))
 	} else {
-		c.JSON(http.StatusOK, util.Success("add department success"))
+		c.JSON(http.StatusOK, util.Success("add service success"))
 	}
 }
 
@@ -62,11 +63,11 @@ func deptTree(c *gin.Context) {
 	var (
 		//reqBody []byte
 		err           error
-		deptLevelDTOs []*contoller.DeptLevelDTO
+		deptLevelDTOs []*model.DeptLevelDTO
 	)
 	_, _ = util.LogReq(c)
-	if deptLevelDTOs, err = department.Tree(); err != nil {
-		logrus.WithError(err).Error("get department tree fail")
+	if deptLevelDTOs, err = service.DepartmentTree(); err != nil {
+		logrus.WithError(err).Error("get service tree fail")
 		c.JSON(http.StatusBadRequest, gin.H{
 			"err": err.Error(),
 		})
@@ -74,3 +75,5 @@ func deptTree(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, deptLevelDTOs)
 }
+
+//func updateDept

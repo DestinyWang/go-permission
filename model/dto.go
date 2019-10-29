@@ -1,4 +1,4 @@
-package contoller
+package model
 
 import "github.com/DestinyWang/go-permission/database"
 
