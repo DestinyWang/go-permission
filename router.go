@@ -16,7 +16,7 @@ func InitRouter() (router *gin.Engine) {
 	router.GET("/hello", hello)
 	router.GET("/dept/tree.json", deptTree)
 	router.POST("/dept/add.json", addDept)
-	router.POST("/dept/update.json", deptTree)
+	router.POST("/dept/update.json", updateDept)
 	return router
 }
 
@@ -61,7 +61,6 @@ func addDept(c *gin.Context) {
 
 func deptTree(c *gin.Context) {
 	var (
-		//reqBody []byte
 		err           error
 		deptLevelDTOs []*model.DeptLevelDTO
 	)
@@ -76,4 +75,23 @@ func deptTree(c *gin.Context) {
 	c.JSON(http.StatusOK, deptLevelDTOs)
 }
 
-//func updateDept
+func updateDept(c *gin.Context) {
+	var (
+		reqBody []byte
+		err     error
+		vo      *model.DeptVO
+	)
+	if reqBody, err = util.LogReq(c); err != nil {
+		logrus.WithError(err).Error("get request err")
+	}
+	operator, _, operateIp := util.Operator(c)
+	if err = jsoniter.Unmarshal(reqBody, &vo); err != nil {
+		logrus.WithError(err).Error("deserialize fail")
+		return
+	}
+	if err = service.UpdateDept(vo, operator, operateIp); err != nil {
+		logrus.WithError(err).Errorf("update department fail: deptVO=[%+v]", vo)
+		return
+	}
+	c.JSON(http.StatusOK, "success")
+}

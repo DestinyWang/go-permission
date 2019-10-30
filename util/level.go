@@ -11,9 +11,12 @@ const (
 )
 
 func CalLevel(parentLevel string, parentId int64) string {
+	//if parentLevel == "" {
+	//	return RootLevel
+	//} else {
 	if parentLevel == "" {
-		return RootLevel
-	} else {
-		return strings.Join([]string{parentLevel, strconv.FormatInt(parentId, 10)}, LevelSeparator)
+		parentLevel = "0"
 	}
+	return strings.Join([]string{parentLevel, strconv.FormatInt(parentId, 10)}, LevelSeparator)
+	//}
 }

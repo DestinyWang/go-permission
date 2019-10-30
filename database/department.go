@@ -55,6 +55,7 @@ func UpdateDept(department *Department) (err error) {
 		"name":         department.Name,
 		"level":        department.Level,
 		"seq":          department.Seq,
+		"remark":       department.Remark,
 		"parent_id":    department.ParentId,
 		"operator":     department.Operator,
 		"operate_time": department.OperateTime,
@@ -66,7 +67,9 @@ func UpdateDept(department *Department) (err error) {
 }
 
 func GetChildDeptByLevel(level string) (deptList []*Department, err error) {
-	if err = util.Db.Where("level LIKE ?", fmt.Sprintf("%s%s%%", level, util.LevelSeparator)).Find(&deptList).Error; err != nil {
+	levelPrefix := fmt.Sprintf("%s%s%%", level, util.LevelSeparator)
+	logrus.Infof("levelPrefix=[%s]", levelPrefix)
+	if err = util.Db.Where("level LIKE ?", levelPrefix).Find(&deptList).Error; err != nil {
 		return deptList, err
 	}
 	return deptList, nil

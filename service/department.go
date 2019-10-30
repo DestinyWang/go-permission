@@ -6,6 +6,7 @@ import (
 	"github.com/DestinyWang/go-permission/database"
 	"github.com/DestinyWang/go-permission/model"
 	"github.com/DestinyWang/go-permission/util"
+	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
 	"sort"
 	"strings"
@@ -17,31 +18,31 @@ var (
 
 func AddDepartment(department *database.Department) (err error) {
 	var (
-		level string
+		parentLevel string
 	)
 	if database.CheckExistDB(department.ParentId, department.Name, department.Id) {
 		return fmt.Errorf("service name [%s] already exists", department.Name)
 	}
-	if level, err = getLevel(department.ParentId); err != nil {
-		logrus.WithError(err).Errorf("get level fail: id=[%d]", department.ParentId)
+	if parentLevel, err = getLevel(department.ParentId); err != nil {
+		logrus.WithError(err).Errorf("get parentLevel fail: id=[%d]", department.ParentId)
 	}
-	department.Level = level
+	department.Level = util.CalLevel(parentLevel, department.ParentId)
 	return database.AddDepartmentDB(department)
 }
 
 // 根据 id 获取 level
-func getLevel(parentId int64) (level string, err error) {
+func getLevel(id int64) (level string, err error) {
 	var (
-		parentDept *database.Department
+		dept *database.Department
 	)
-	if parentDept, err = database.GetDeptById(parentId); err != nil {
-		logrus.WithError(err).Errorf("get level fail: id=[%d]", parentId)
+	if dept, err = database.GetDeptById(id); err != nil {
+		logrus.WithError(err).Errorf("get level fail: id=[%d]", id)
 		return
 	}
-	if parentDept == nil {
-		return "", nil
+	if err == gorm.ErrRecordNotFound {
+		return "0", nil
 	}
-	return util.CalLevel(parentDept.Level, parentId), nil
+	return dept.Level, nil
 }
 
 func DepartmentTree() (deptLevelDTOs []*model.DeptLevelDTO, err error) {
@@ -107,23 +108,23 @@ func checkExist(parentId int64, deptName string, deptId int64) (exists bool, err
 
 func UpdateDept(vo *model.DeptVO, operator string, operateIp string) (err error) {
 	var (
-		department  *database.Department
+		originDept  *database.Department
 		parentLevel string
 	)
-	if department, err = database.GetDeptById(vo.Id); err != nil {
+	if originDept, err = database.GetDeptById(vo.Id); err != nil {
 		return err
 	}
-	if department == nil {
+	if originDept == nil {
 		return DepartmentNotFound
 	}
 	// 判断当前层级是否存在相同部门
-	if parentLevel, err = getLevel(department.ParentId); err != nil {
+	if parentLevel, err = getLevel(originDept.ParentId); err != nil {
 		return err
 	}
 	newDept := &database.Department{
 		Id:          vo.Id,
 		Name:        vo.Name,
-		Level:       util.CalLevel(parentLevel, department.ParentId),
+		Level:       util.CalLevel(parentLevel, vo.ParentId),
 		Seq:         vo.Seq,
 		Remark:      vo.Remark,
 		ParentId:    vo.ParentId,
@@ -131,7 +132,7 @@ func UpdateDept(vo *model.DeptVO, operator string, operateIp string) (err error)
 		OperateTime: util.CurrMillSecond(),
 		OperateIp:   operateIp,
 	}
-	return updateWithChild(department, newDept)
+	return updateWithChild(originDept, newDept)
 }
 
 func updateWithChild(before *database.Department, after *database.Department) (err error) {
@@ -147,7 +148,9 @@ func updateWithChild(before *database.Department, after *database.Department) (e
 	}
 	if after.Level != before.Level {
 		// 如果更新后部门 level 发生改变, 需要更新所有子部门
-		if beforeChildDepts, err = database.GetChildDeptByLevel(before.Level); err != nil {
+		childDeptLevelPrefix := util.CalLevel(before.Level, before.Id)
+		logrus.Infof("childDeptLevelPrefix=[%s]", childDeptLevelPrefix)
+		if beforeChildDepts, err = database.GetChildDeptByLevel(childDeptLevelPrefix); err != nil {
 			return err
 		}
 		if len(beforeChildDepts) > 0 {

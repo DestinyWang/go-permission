@@ -16,7 +16,7 @@ func TestGetByIdDB(t *testing.T) {
 
 func TestGetChildDeptByLevel(t *testing.T) {
 	util.InitTestConfig()
-	deptList, err := GetChildDeptByLevel("0")
+	deptList, err := GetChildDeptByLevel("0/12")
 	assert.Nil(t, err)
 	t.Log(deptList)
 }
@@ -33,7 +33,7 @@ func TestUpdateDept(t *testing.T) {
 
 func TestCountByParentIdAndName(t *testing.T) {
 	util.InitTestConfig()
-	cnt, err := CountByParentIdAndName(18, "destinywk-sub")
-	assert.Nil(t, err)
-	t.Log(cnt)
+	//cnt, err := CountByParentIdAndName(18, "destinywk-sub")
+	//assert.Nil(t, err)
+	//t.Log(cnt)
 }
