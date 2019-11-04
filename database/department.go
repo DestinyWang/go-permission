@@ -29,6 +29,9 @@ func CheckExistDB(parentId int64, name string, deptId int64) bool {
 
 func GetDeptById(id int64) (department *Department, err error) {
 	department = new(Department)
+	if id == 0 {
+		return nil, nil
+	}
 	if err := util.Db.First(department, id).Error; err != nil {
 		logrus.WithError(err).Errorf("get level fail: id=[%d]", id)
 	}
