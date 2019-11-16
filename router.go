@@ -13,14 +13,13 @@ import (
 
 func InitRouter() (router *gin.Engine) {
 	router = gin.Default()
-	router.LoadHTMLGlob("views/templates/*")
+	// dept
 	router.GET("/hello", hello)
 	router.GET("/dept/tree.json", deptTree)
 	router.POST("/dept/add.json", addDept)
 	router.POST("/dept/update.json", updateDept)
-	router.GET("/dept/page", deptPage)
-	router.GET("/dept/backend_common.html", commonBackend)
-	//router.GET("/page.html", commonPage)
+	// user
+	
 	return router
 }
 
@@ -99,24 +98,3 @@ func updateDept(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, "success")
 }
-
-func deptPage(c *gin.Context) {
-	var (
-		//reqBody []byte
-		err error
-	)
-	if _, err = util.LogReq(c); err != nil {
-		logrus.WithError(err).Error("get request err")
-	}
-	c.HTML(http.StatusOK, "dept.html", gin.H{
-		"msg": "success",
-	})
-}
-
-func commonBackend(c *gin.Context) {
-	c.HTML(http.StatusOK, "backend_common.html", gin.H{})
-}
-
-//func commonPage(c *gin.Context) {
-//	c.HTML(http.StatusOK, "page.html", gin.H{})
-//}
