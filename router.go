@@ -19,6 +19,7 @@ func InitRouter() (router *gin.Engine) {
 	router.POST("/dept/add.json", addDept)
 	router.POST("/dept/update.json", updateDept)
 	// user
+	router.POST("/user/add.json", addUser)
 	
 	return router
 }
@@ -94,6 +95,28 @@ func updateDept(c *gin.Context) {
 	}
 	if err = service.UpdateDept(vo, operator, operateIp); err != nil {
 		logrus.WithError(err).Errorf("update department fail: deptVO=[%+v]", vo)
+		return
+	}
+	c.JSON(http.StatusOK, "success")
+}
+
+func addUser(c *gin.Context) {
+	var (
+		reqBody []byte
+		err error
+		user *model.UserVO
+	)
+	if reqBody, err = util.LogReq(c); err != nil {
+		logrus.WithError(err).Error("get request err")
+		return
+	}
+	operator, operateTime, operateIp := util.Operator(c)
+	if err = jsoniter.Unmarshal(reqBody, &user); err != nil {
+		logrus.WithError(err).Errorf("deserialize fail: reqBody=[%s]", string(reqBody))
+		return
+	}
+	if err = service.AddUser(user, operator, operateTime, operateIp); err != nil {
+		logrus.WithError(err).Errorf("add user fail: user=[%+v]", user)
 		return
 	}
 	c.JSON(http.StatusOK, "success")
